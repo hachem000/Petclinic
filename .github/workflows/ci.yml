@@ -59,6 +59,10 @@ jobs:
     needs: [depchecktest, build-deploy]
     runs-on: ubuntu-latest
     steps: 
+    
+      - name: Checkout Code
+        uses: actions/checkout@v4 
+      
       - name: Set image tags
         id: vars
         run: |
