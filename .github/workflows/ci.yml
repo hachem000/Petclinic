@@ -42,8 +42,8 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/PetClinic:${{ env.TIMESTAMP }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/PetClinic:${{ env.SHORT_SHA }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/PetClinic:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
         
   
