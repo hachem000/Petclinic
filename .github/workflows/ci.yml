@@ -4,10 +4,27 @@ on:
     branches:
       - main
 jobs:
+  depchecktest:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@1.0.0
+        id: Depcheck
+        with:
+          project: 'petclinic'
+          path: '.'
+          format: 'HTML'
+      - name : Upload test results
+        uses: actions/upload-artifact@4
+        with:
+          name: Depcheck-report
+          path: ${{github.workspace}}/reports
+  
   build-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,18 +40,46 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean package --file pom.xml
+
+      - name: Prepare jar file
+        run: mkdir staging && cp target/*.jar staging
+      - name: Upload jar file
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-file
+          path: staging
+        
       - name: Set image tags
         id: vars
         run: |
           echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
           echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           
+  docker-deploy:
+    needs: [depchecktest, build-deploy]
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Set image tags
+        id: vars
+        run: |
+          echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          
+      - name: Checkout Code
+        uses: actions/checkout@v4 
+      
+      - name: Download jar file
+        uses: actions/download-artifact@v4
+        with:
+          name: jar-file
+          path: staging
+          
       - name: Login to Docker Hub
         uses: docker/login-action@v3
-        with: 
+        with:  
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+  
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -45,5 +90,5 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
-        
+          
   
