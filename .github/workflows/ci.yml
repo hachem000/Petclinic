@@ -44,7 +44,7 @@ jobs:
       - name: Prepare jar file
         run: mkdir staging && cp target/*.jar staging
       - name: Upload jar file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@3
         with:
           name: jar-file
           path: staging
