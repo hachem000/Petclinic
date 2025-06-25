@@ -22,7 +22,8 @@ jobs:
         run: mvn -B test --file pom.xml
 
       - name: Build with Maven
-        run: mvn clean package --file pom.xml -DskipTests
+        run: mvn clean package --file pom.xml
+        
       - name: Set image tags
         id: vars
         run: |
