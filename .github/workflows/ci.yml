@@ -120,7 +120,7 @@ jobs:
       - name: Smoke test Render app
         run : |
           for i in $(seq 1 3); do
-            curl --fail https://petclinic.onrender.com && exit 0
+            curl --fail https://petclinic-0v3b.onrender.com/ && exit 0
             echo "Attempt $i failed. Retrying in 10 seconds..."
             if [ "$i" -eq 3 ]; then
               echo "❌ Smoke test failed after 3 attempts."
