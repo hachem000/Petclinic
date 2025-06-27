@@ -62,8 +62,9 @@ jobs:
         run: |
           echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
           echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "TIMESTAMP=$TIMESTAMP_VALUE" >> "$GITHUB_OUTPUT"
-          echo "SHORT_SHA=$SHORT_SHA_VALUE" >> "$GITHUB_OUTPUT"
+        outputs : 
+          TIMESTAMP: ${{ env.TIMESTAMP }}
+          SHORT_SHA: ${{ env.SHORT_SHA }}
           
   docker-deploy:
     needs: [depchecktest, build-deploy]
@@ -93,8 +94,8 @@ jobs:
           load: true
           push: false
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ needs.build-deploy.outputs.TIMESTAMP }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ needs.build-deploy.outputs.SHORT_SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
 
 
@@ -109,8 +110,7 @@ jobs:
           file: Dockerfile  
           push: true 
           tags: |
-            {{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ needs.build-deploy.outputs.TIMESTAMP }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ needs.build-deploy.outputs.SHORT_SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
-
   
