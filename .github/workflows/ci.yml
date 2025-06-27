@@ -38,7 +38,6 @@ jobs:
       - name: Run Unit Tests
         run: mvn -B test --file pom.xml
 
-      
       - name: Sonarqube scan
         uses : SonarSource/sonarqube-scan-action@v5.2.0
         env: 
@@ -51,6 +50,7 @@ jobs:
 
       - name: Prepare jar file
         run: mkdir staging && cp target/*.jar staging
+        
       - name: Upload jar file
         uses: actions/upload-artifact@v4
         with:
