@@ -92,15 +92,31 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
   
-      - name: Build and Push Docker Image
+      - name: Build Docker Image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
-          push: true
+          load: true
+          push: false
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
-          
+
+
+      - name : Trivy image scanning
+        uses : aquasecurity/trivy-action@0.5.0
+        with:
+          image : ${{secrets.DOCKER_HUB_USERNAME}}/petclinic:${{ env.TIMESTAMP }}
+      - name : Pushing docker Image 
+        uses: docker/build-push-action@v5
+        with:
+          context: . 
+          file: Dockerfile  
+          push: true 
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
   
