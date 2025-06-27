@@ -62,21 +62,15 @@ jobs:
         run: |
           echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
           echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        outputs : 
+          TIMESTAMP: ${{ env.TIMESTAMP }}
+          SHORT_SHA: ${{ env.SHORT_SHA }}
           
   docker-deploy:
     needs: [depchecktest, build-deploy]
     runs-on: ubuntu-latest
     steps: 
     
-      - name: Checkout Code
-        uses: actions/checkout@v4 
-      
-      - name: Set image tags
-        id: vars
-        run: |
-          echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          
       - name: Checkout Code
         uses: actions/checkout@v4 
       
@@ -100,8 +94,8 @@ jobs:
           load: true
           push: false
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ needs.build-deploy.outputs.TIMESTAMP }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ needs.build-deploy.outputs.SHORT_SHA }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
 
 
