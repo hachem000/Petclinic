@@ -2,6 +2,7 @@ modules = ["web", "java-graalvm22.3"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["unzip"]
 
 [[ports]]
 localPort = 8080
