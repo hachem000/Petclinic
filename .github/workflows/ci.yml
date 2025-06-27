@@ -62,10 +62,7 @@ jobs:
         run: |
           echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
           echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        outputs : 
-          TIMESTAMP: ${{ env.TIMESTAMP }}
-          SHORT_SHA: ${{ env.SHORT_SHA }}
-          
+     
   docker-deploy:
     needs: [depchecktest, build-deploy]
     runs-on: ubuntu-latest
@@ -73,6 +70,12 @@ jobs:
     
       - name: Checkout Code
         uses: actions/checkout@v4 
+      
+      - name: Set image tags
+        id: vars
+        run: |
+          echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       
       - name: Download jar file
         uses: actions/download-artifact@v4
