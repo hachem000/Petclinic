@@ -108,7 +108,7 @@ jobs:
           output-format: json
           output-file: anchore-scan-results.json
           fail-build: true
-          
+        if: always()
 
   
       - name: Upload anchore scan results
