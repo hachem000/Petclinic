@@ -1,0 +1,12 @@
+[filesystem "GraalVM Community|19.0.2|/dev/nbd114"]
+	timestampResolution = 5470 nanoseconds
+	minRacyThreshold = 3291 microseconds
+[filesystem "N/A|19.0.2|/dev/nbd114"]
+	timestampResolution = 3969 nanoseconds
+	minRacyThreshold = 1024 microseconds
+[filesystem "N/A|19.0.2|/dev/nbd151"]
+	timestampResolution = 5290 nanoseconds
+	minRacyThreshold = 1726 microseconds
+[filesystem "N/A|19.0.2|/dev/nbd77"]
+	timestampResolution = 31000 nanoseconds
+	minRacyThreshold = 1595 microseconds

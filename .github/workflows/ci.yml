@@ -105,7 +105,7 @@ jobs:
       - name : Trivy image scanning
         uses : aquasecurity/trivy-action@0.5.0
         with:
-          image : ${{secrets.DOCKER_HUB_USERNAME}}/petclinic:${{ env.TIMESTAMP }}
+          image-ref : ${{secrets.DOCKER_HUB_USERNAME}}/petclinic:${{ env.TIMESTAMP }}
       - name : Pushing docker Image 
         uses: docker/build-push-action@v5
         with:
