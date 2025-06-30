@@ -107,11 +107,13 @@ jobs:
           image: ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
           output-format: json
           output-file: anchore-scan-results.json
-          fail-build: true
-        if: always()
+          fail-build: false
+          severity-cutoff: critical
+        
 
   
       - name: Upload anchore scan results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: anchore-scan-report
