@@ -102,6 +102,7 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
 
       - name : Anchore image scan 
+        id: anchore-scan
         uses: anchore/scan-action@v6.3.0
         with:
           image: ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
@@ -118,10 +119,22 @@ jobs:
         with:
           name: anchore-scan-report
           path: anchore-scan-results.json
-
+        
+      - name: Fail build if high or critical vulnerabilities found
+        run: |
+          echo "Checking scan results..."
+          high_count=$(jq '[.matches[] | select(.vulnerability.severity == "High" or .vulnerability.severity == "Critical")] | length' anchore-scan-results.json)
+          echo "High/Critical vulnerabilities found: $high_count"
+          if [ "$high_count" -gt 0 ]; then
+            echo "❌ Build failed due to high/critical vulnerabilities."
+            exit 1
+          else
+            echo "✅ No high/critical vulnerabilities found."
+          fi    
 
 
       - name : Push docker Image 
+        
         run: |
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
