@@ -101,30 +101,27 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
 
+      - name : Anchore image scan 
+        uses: anchore/scan-action@v6.3.0
+        with:
+          image: ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
+          output-format: json
+          output-file: anchore-scan-results.json
+          fail-build: true
+          
 
-      - name : Trivy image scanning
-        uses : aquasecurity/trivy-action@0.5.0
+  
+      - name: Upload anchore scan results
+        uses: actions/upload-artifact@v4
         with:
-          image-ref : ${{secrets.DOCKER_HUB_USERNAME}}/petclinic:${{ env.TIMESTAMP }}
-      - name : Pushing docker Image 
-        uses: docker/build-push-action@v5
-        with:
-          context: . 
-          file: Dockerfile  
-          push: true 
-          tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
-            
-      - name: Smoke test Render app
-        run : |
-          for i in $(seq 1 3); do
-            curl --fail https://petclinic-0v3b.onrender.com/ && exit 0
-            echo "Attempt $i failed. Retrying in 10 seconds..."
-            if [ "$i" -eq 3 ]; then
-              echo "❌ Smoke test failed after 3 attempts."
-            fi
-            sleep 10
-          done
-          exit 1
+          name: anchore-scan-report
+          path: anchore-scan-results.json
+
+
+
+      - name : Push docker Image 
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.TIMESTAMP }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:${{ env.SHORT_SHA }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest
+   
