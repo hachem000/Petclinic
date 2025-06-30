@@ -108,7 +108,7 @@ jobs:
           output-format: json
           output-file: anchore-scan-results.json
           fail-build: false
-          severity-cutoff: critical
+          severity-cutoff: high
         
 
   
