@@ -110,15 +110,42 @@ jobs:
           output-file: anchore-scan-results.json
           fail-build: false
           severity-cutoff: high
-        
-
-  
       - name: Upload anchore scan results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: anchore-scan-report
           path: anchore-scan-results.json
+
+      - name : Trivy image scan 
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref : '${{ secrets.DOCKER_HUB_USERNAME }}/petclinic:latest'
+          format: 'json'
+          output: 'trivy-scan-results.json'
+          ignore-unfixed: true
+          severity: 'HIGH,CRITICAL'
+
+      - name : Upload Trivy scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-scan-results.json
+          path: trivy-scan-results.json
+
+      - name: Check Trivy scan results for Critical vulnerabilities.
+        run : |
+          REPORT_FILE=trivy-scan-results.json
+          CRITICAL_COUNT=$(jq '(.Results[].Vulnerabilities[] | select(.Severity == "CRITICAL")) | length' "$REPORT_FILE")
+          echo "Critical vulnerabilities found: $CRITICAL_COUNT"
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "❌ Build failed due to critical vulnerabilities."
+            exit 1
+          else
+            echo "✅ No critical vulnerabilities found."
+          fi
+
+  
+      
         
       - name: Fail build if high or critical vulnerabilities found
         run: |
