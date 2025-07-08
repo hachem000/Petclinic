@@ -50,9 +50,6 @@ public class Person extends BaseEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	String password = "admin123"; // hardcoded secret
-	public String getPassword() {
-		return password;
-	}
+	
 
 }
